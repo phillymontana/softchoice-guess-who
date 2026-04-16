@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-black text-white antialiased;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.glass-card {
+  @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500;
+}

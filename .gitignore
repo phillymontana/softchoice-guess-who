@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.db
+*.db-journal
+dist/
+build/
+.DS_Store
+.vscode/
+apps/client/voted_images

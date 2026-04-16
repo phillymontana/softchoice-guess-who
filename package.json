@@ -1,0 +1,19 @@
+{
+  "name": "guess-who",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npx concurrently \"npm run dev -w apps/server\" \"npm run dev -w apps/client\"",
+    "install:all": "npm install",
+    "build": "npm run build --workspaces --if-present",
+    "db:view": "npm run db:view -w apps/server",
+    "db:clear": "npm run db:clear -w apps/server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
