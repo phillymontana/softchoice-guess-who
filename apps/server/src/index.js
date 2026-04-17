@@ -9,6 +9,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust the first proxy (Nginx) so req.ip correctly reflects the real client IP
+// via X-Forwarded-For. Without this, every request appears to come from 127.0.0.1,
+// which causes all users to share the same "IP slot" and overwrite each other's votes.
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors());
 app.use(express.json());

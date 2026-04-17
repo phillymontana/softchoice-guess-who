@@ -114,27 +114,47 @@ const VoteModal = () => {
                 Thanks for helping the community identify this AI portrait.
               </p>
 
-              {voteData?.topGuesses?.length > 0 && (
-                <div className="w-full space-y-3 text-left">
-                  <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest px-2">
-                    Current Standings
-                  </p>
-                  {voteData.topGuesses.map((guess, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-3 bg-zinc-800 rounded-xl"
-                    >
-                      <span className="font-medium">{guess.name}</span>
-                      <span className="bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded-full text-xs font-bold">
-                        {guess.count}
-                      </span>
-                    </div>
-                  ))}
+              <div className="w-full space-y-3 text-left">
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest px-2">
+                  Current Standings
+                </p>
+
+                {/* Stack-ranked top 3 named guesses */}
+                {(voteData?.topGuesses?.length > 0)
+                  ? voteData.topGuesses.slice(0, 3).map((guess, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-3 bg-zinc-800 rounded-xl"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black text-zinc-500 w-4">#{i + 1}</span>
+                          <span className="font-medium">{guess.name}</span>
+                        </div>
+                        <span className="bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded-full text-xs font-bold">
+                          {guess.count} {guess.count === 1 ? 'vote' : 'votes'}
+                        </span>
+                      </div>
+                    ))
+                  : (
+                    <p className="text-sm text-zinc-500 px-2">No named guesses yet — be the first!</p>
+                  )
+                }
+
+                {/* Always show "I don't know" as the 4th slot */}
+                <div className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-xl border border-white/5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-zinc-500 w-4">#4</span>
+                    <span className="font-medium text-zinc-400">I don't know</span>
+                  </div>
+                  <span className="bg-zinc-700/50 text-zinc-500 px-2 py-0.5 rounded-full text-xs font-bold">
+                    always here
+                  </span>
                 </div>
-              )}
+              </div>
+
               <button
                 onClick={() => setHasVoted(false)}
-                className="mt-4 text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
+                className="mt-6 text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
               >
                 <span>↺</span> Change your vote
               </button>
