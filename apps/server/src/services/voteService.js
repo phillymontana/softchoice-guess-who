@@ -3,15 +3,23 @@ import { Filter } from 'bad-words';
 
 const filter = new Filter();
 
-export const submitVote = (imageKey, guessName, ip) => {
+/**
+ * Submit a vote. Each call inserts a new row (+1 to the tally).
+ * If the user is changing a previous vote, pass previousVoteId — that row is
+ * deleted first (swap), so the net total stays accurate.
+ * Returns the updated tallies plus the new row's voteId for the client to store.
+ */
+export const submitVote = (imageKey, guessName, ip, previousVoteId = null) => {
   const trimmedName = guessName.trim();
 
-  // Every vote is a straight +1 INSERT — no deletion, no IP deduplication.
-  // The database is the single source of truth for cumulative vote tallies.
+  // If changing a vote, atomically remove the old row first
+  if (previousVoteId) {
+    queries.deleteVoteById.run(previousVoteId);
+  }
 
   if (trimmedName === '__unknown__') {
-    queries.insertVote.run(imageKey, '__unknown__', ip);
-    return getTallies(imageKey);
+    const { lastInsertRowid } = queries.insertVote.run(imageKey, '__unknown__', ip);
+    return { ...getTallies(imageKey), voteId: Number(lastInsertRowid) };
   }
 
   // Profanity filter
@@ -25,9 +33,9 @@ export const submitVote = (imageKey, guessName, ip) => {
   const match = existingNames.find(e => e.guess_name.toLowerCase() === lowercaseNewName);
   const canonicalName = match ? match.guess_name : trimmedName;
 
-  queries.insertVote.run(imageKey, canonicalName, ip);
+  const { lastInsertRowid } = queries.insertVote.run(imageKey, canonicalName, ip);
 
-  return getTallies(imageKey);
+  return { ...getTallies(imageKey), voteId: Number(lastInsertRowid) };
 };
 
 

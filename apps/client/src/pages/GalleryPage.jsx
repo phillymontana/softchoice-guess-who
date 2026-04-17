@@ -40,6 +40,15 @@ const GalleryPage = ({ onImageClick }) => {
         <p className="text-zinc-400 max-w-xl">
           Browse through hundreds of AI-generated portraits and help the community identify who they might be. Tallying guesses in real-time.
         </p>
+        <a 
+          href="https://next-cabana-app-ui.web.app/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="mt-3 text-xs font-medium text-blue-400/80 hover:text-blue-400 transition-colors inline-flex items-center gap-1 group"
+        >
+          <span>Get your very own AI image today!</span>
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+        </a>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">

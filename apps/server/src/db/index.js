@@ -47,7 +47,9 @@ export default db;
 
 // Query helpers
 export const queries = {
-  // Every vote is a straight +1 — no delete/dedup
+  // Every vote is a straight +1 INSERT.
+  // When a user changes their vote, we delete the old row by ID and insert a new one.
+  deleteVoteById: db.prepare('DELETE FROM votes WHERE id = ?'),
   insertVote: db.prepare('INSERT INTO votes (image_key, guess_name, ip) VALUES (?, ?, ?)'),
   
   getTopGuesses: db.prepare(`

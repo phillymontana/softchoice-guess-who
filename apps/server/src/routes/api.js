@@ -21,7 +21,7 @@ router.get('/votes/:imageKey', (req, res) => {
 // Pass req.ip to support vote replacement/negation
 router.post('/votes', (req, res) => {
   try {
-    const { imageKey, guessName } = req.body;
+    const { imageKey, guessName, previousVoteId } = req.body;
 
     if (!imageKey || !guessName) {
       return res.status(400).json({ error: 'imageKey and guessName are required.' });
@@ -36,9 +36,14 @@ router.post('/votes', (req, res) => {
       return res.status(400).json({ error: 'Invalid image key.' });
     }
 
-    const updatedTallies = voteService.submitVote(imageKey, guessName, req.ip);
+    const { voteId, ...updatedTallies } = voteService.submitVote(
+      imageKey,
+      guessName,
+      req.ip,
+      previousVoteId || null
+    );
 
-    res.json({ success: true, updatedTallies });
+    res.json({ success: true, voteId, updatedTallies });
   } catch (error) {
     const statusCode = error.message.includes('inappropriate') ? 400 : 500;
     res.status(statusCode).json({ error: error.message });
