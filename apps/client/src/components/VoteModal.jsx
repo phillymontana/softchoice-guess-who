@@ -13,20 +13,13 @@ const VoteModal = () => {
   // React Query v5: isLoading → isPending on mutations
   const { mutate: submitVote, isPending: isSubmitting, isSuccess, error: submitError, reset } = useSubmitVote();
 
-  // Reset state whenever a new image is selected
+  // Reset state whenever a new image is selected (always land on the voting form)
   useEffect(() => {
     if (isOpen && selectedImage) {
-      reset(); // reset mutation state
-      const votedImages = JSON.parse(localStorage.getItem('voted_images') || '{}');
-      const priorVote = votedImages[selectedImage.key]; // 'named' | 'unknown' | undefined
-      if (priorVote) {
-        setHasVoted(true);
-      } else {
-        setHasVoted(false);
-        // Pre-select "I don't know" if they voted unknown before, as a hint
-        setSelectedGuess(priorVote === 'unknown' ? '__unknown__' : '');
-        setNewName('');
-      }
+      reset();          // clear mutation state
+      setHasVoted(false);
+      setSelectedGuess('');
+      setNewName('');
     }
   }, [isOpen, selectedImage?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -46,12 +39,7 @@ const VoteModal = () => {
 
     submitVote({ imageKey: selectedImage.key, guessName }, {
       onSuccess: () => {
-        const isUnknown = guessName === '__unknown__';
-        setHasVoted(true);
-        const votedImages = JSON.parse(localStorage.getItem('voted_images') || '{}');
-        // Store 'named' or 'unknown' so we can decide whether to allow re-voting
-        votedImages[selectedImage.key] = isUnknown ? 'unknown' : 'named';
-        localStorage.setItem('voted_images', JSON.stringify(votedImages));
+        setHasVoted(true); // show success screen after this submission
       }
     });
   };
@@ -88,15 +76,6 @@ const VoteModal = () => {
         <div className="md:w-1/2 p-6 md:p-10 flex flex-col overflow-y-auto">
           <div className="mb-8">
             <h2 className="text-3xl font-black mb-2">Who is this?</h2>
-            {/* Show a nudge if they previously voted 'I don't know' */}
-            {(() => {
-              const prior = JSON.parse(localStorage.getItem('voted_images') || '{}')?.[selectedImage.key];
-              return prior === 'unknown' && !voted ? (
-                <p className="text-xs text-amber-400/80 font-medium mb-2 flex items-center gap-1">
-                  <span>⚡</span> You voted "I don't know" — want to try again?
-                </p>
-              ) : null;
-            })()}
             <p className="text-zinc-500 text-sm">
               Community Consensus:{' '}
               <span className="text-blue-400 font-bold">

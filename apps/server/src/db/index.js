@@ -47,7 +47,7 @@ export default db;
 
 // Query helpers
 export const queries = {
-  deleteUserVote: db.prepare('DELETE FROM votes WHERE image_key = ? AND ip = ?'),
+  // Every vote is a straight +1 — no delete/dedup
   insertVote: db.prepare('INSERT INTO votes (image_key, guess_name, ip) VALUES (?, ?, ?)'),
   
   getTopGuesses: db.prepare(`

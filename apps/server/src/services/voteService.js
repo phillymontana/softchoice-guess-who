@@ -5,11 +5,9 @@ const filter = new Filter();
 
 export const submitVote = (imageKey, guessName, ip) => {
   const trimmedName = guessName.trim();
-  
-  // First, negate/delete any previous vote from this IP for this image
-  if (ip) {
-    queries.deleteUserVote.run(imageKey, ip);
-  }
+
+  // Every vote is a straight +1 INSERT — no deletion, no IP deduplication.
+  // The database is the single source of truth for cumulative vote tallies.
 
   if (trimmedName === '__unknown__') {
     queries.insertVote.run(imageKey, '__unknown__', ip);
@@ -21,15 +19,14 @@ export const submitVote = (imageKey, guessName, ip) => {
     throw new Error('Name contains inappropriate content.');
   }
 
-  // Deduplication logic
+  // Canonicalise the name (case-insensitive merge so "Ron" and "ron" share one bucket)
   const existingNames = queries.getDistinctNames.all(imageKey);
   const lowercaseNewName = trimmedName.toLowerCase();
-  
-  const match = existingNames.find(existing => existing.guess_name.toLowerCase() === lowercaseNewName);
+  const match = existingNames.find(e => e.guess_name.toLowerCase() === lowercaseNewName);
   const canonicalName = match ? match.guess_name : trimmedName;
 
   queries.insertVote.run(imageKey, canonicalName, ip);
-  
+
   return getTallies(imageKey);
 };
 
